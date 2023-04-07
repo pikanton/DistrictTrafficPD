@@ -11,12 +11,16 @@ namespace WinFormsApp1
         public static SqlConnection? Connection => connection;
         public static void OpenConnection()
         {
-            connection = new SqlConnection(connectionString);
-            connection.Open();
+            if (connection?.State != System.Data.ConnectionState.Open)
+            {
+                connection = new SqlConnection(connectionString);
+                connection.Open();
+            }
         }
         public static void CloseConnection()
         {
-            connection?.Close();
+            if (connection?.State == System.Data.ConnectionState.Open)
+                connection.Close();
         }
     }
 }
