@@ -42,6 +42,7 @@
             loginBox.Size = new Size(187, 23);
             loginBox.TabIndex = 0;
             loginBox.Text = "avsumonchik";
+            loginBox.KeyPress += loginBox_KeyPress;
             // 
             // passwordBox
             // 
@@ -50,6 +51,7 @@
             passwordBox.PasswordChar = '*';
             passwordBox.Size = new Size(187, 23);
             passwordBox.TabIndex = 1;
+            passwordBox.KeyPress += passwordBox_KeyPress;
             // 
             // loginLabel
             // 
@@ -90,7 +92,8 @@
             Controls.Add(passwordBox);
             Controls.Add(loginBox);
             Name = "AuthorizationForm";
-            Text = "RegistrationForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Авторизация";
             ResumeLayout(false);
             PerformLayout();
         }

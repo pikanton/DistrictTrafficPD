@@ -2,25 +2,32 @@
 
 namespace WinFormsApp1
 {
-    internal class DBContext
+    public class DBContext
     {
         private static readonly string connectionString = @"Data Source=WIN-I8NPL89GTIE;" +
                                           @"Initial Catalog=ГАИ2;Integrated Security=True";
-        private static SqlConnection? connection;
-
-        public static SqlConnection? Connection => connection;
-        public static void OpenConnection()
+        private readonly SqlConnection? connection;
+        public SqlConnection? Connection => connection;
+        public DBContext()
         {
-            if (connection?.State != System.Data.ConnectionState.Open)
+            try
             {
-                connection = new SqlConnection(connectionString);
-                connection.Open();
+                if (connection?.State != System.Data.ConnectionState.Open)
+                {
+                    connection = new SqlConnection(connectionString);
+                    connection.Open();
+                }
             }
-        }
-        public static void CloseConnection()
-        {
-            if (connection?.State == System.Data.ConnectionState.Open)
-                connection.Close();
+            catch
+            {
+                MessageBox.Show(
+                    "Не удается установить соеденение с базой данных. Попробуйте позже."
+                    , "Ошибка"
+                    , MessageBoxButtons.OK
+                    , MessageBoxIcon.Error
+                    , MessageBoxDefaultButton.Button1
+                    );
+            }
         }
     }
 }

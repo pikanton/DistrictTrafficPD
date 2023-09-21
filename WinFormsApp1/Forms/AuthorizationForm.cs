@@ -1,57 +1,60 @@
-﻿using System.Data.SqlClient;
-using System.Security.Cryptography;
-using System.Text;
+﻿using GAI.Classes;
+using GAI.Repository;
+using System.Data.SqlClient;
 using WinFormsApp1;
 
 namespace GAI.Forms
 {
     public partial class AuthorizationForm : Form
     {
+        public DBContext context;
         public AuthorizationForm()
         {
+            context = new DBContext();
             InitializeComponent();
         }
 
         private void submitButton_Click(object sender, EventArgs e)
         {
-            string login = loginBox.Text.Trim();
+            string username = loginBox.Text.Trim();
             string password = passwordBox.Text;
-            SHA256 sha256 = SHA256.Create();
-            byte[] hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            string hashedPassword = Convert.ToBase64String(hashedBytes);
-
-            string query = Queries.Login;
-            using (DBContext.Connection)
+            if (string.IsNullOrEmpty(username))
             {
-                DBContext.OpenConnection();
-                using (SqlCommand command = new(query, DBContext.Connection))
-                {
-                    command.Parameters.AddWithValue("@login", login);
-                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.Read())
-                    {
-                        string? dbPassword = reader["Пароль"].ToString();
-                        if (hashedPassword.Equals(dbPassword))
-                        {
-                            MainForm mainForm = new((int)reader["Код"]
-                                                  , $"{reader["Фамилия"]} {reader["Имя"]} {reader["Отчество"]}"
-                                                  , reader["Наименование"].ToString());
-                            mainForm.Show();
-                            Hide();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Неверный пароль. Проверьте введенные данные.");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Неверный логин. Проверьте введенные данные.");
-                    }
-                }
-                DBContext.CloseConnection();
+                MessageBox.Show("Введите имя пользователя!");
+                return;
             }
+            else if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Введите пароль!");
+                return;
+            }
+            EmployeeRepository employeeRepository = new(context);
+            Employee? employee = employeeRepository.Authorize(username, password);
+            if (employee != null)
+            {
+                MainForm mainForm = new(employee, context);
+                mainForm.Show();
+                Hide();
+            }
+            else
+            {
+                MessageBox.Show("Неверный логин или пароль. Проверьте введенные данные!");
+            }
+        }
+        private void passwordBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                submitButton_Click(sender, e);
+            }
+        }
 
+        private void loginBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                submitButton_Click(sender, e);
+            }
         }
     }
 }
