@@ -1,1 +1,2 @@
 # DistrictTrafficPD
+In the context of this coursework project, an information system was developed for the district branch of the State Automobile Inspectorate (GAI). The system provides convenient tools for managing the database and ensures efficient interaction with data. The development was carried out using the C# programming language and .NET Framework technologies, while the database was implemented on the MS SQL Server platform. It's worth noting that ORM systems were not used in this project, and significant attention was dedicated to database operations.
